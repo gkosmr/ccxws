@@ -10,7 +10,7 @@ const { CandlePeriod } = require("../enums");
 const Candle = require("../candle");
 
 class HitBTCClient extends BasicClient {
-  constructor({ wssPath = "wss://api.hitbtc.com/api/2/ws", throttleMs = 25, watcherMs } = {}) {
+  constructor({ wssPath = "wss://api.hitbtc.com/api/3/ws/public", throttleMs = 25, watcherMs } = {}) {
     super(wssPath, "HitBTC", undefined, watcherMs);
     this._id = 0;
 
@@ -56,9 +56,10 @@ class HitBTCClient extends BasicClient {
   _sendSubTrades(remote_id) {
     this._send(
       JSON.stringify({
-        method: "subscribeTrades",
+        method: "subscribe",
+        ch: 'trades',
         params: {
-          symbol: remote_id,
+          symbols: [remote_id],
         },
         id: ++this._id,
       })
@@ -130,66 +131,68 @@ class HitBTCClient extends BasicClient {
     // The payload for a subscribe confirm will include the id that
     // was attached in the JSON-RPC call creation.  For example:
     // { jsonrpc: '2.0', result: true, id: 7 }
-    if (msg.result === true && msg.id) {
-      // console.log(msg);
-      // return;
-    }
+    // if (msg.result === true && msg.id) {
+    //   // console.log(msg);
+    //   // return;
+    // }
 
     // For unsubscribe calls, we are not including an id
     // so we can ignore messages that do not can an id value:
     // { jsonrpc: '2.0', result: true, id: null }
-    if (msg.result !== undefined && msg.id) {
-      return;
-    }
+    // if (msg.result !== undefined && msg.id) {
+    //   return;
+    // }
 
-    let remote_id = msg.params && msg.params.symbol;
+    // let remote_id = msg.params && msg.params.symbol;
 
-    if (msg.method === "ticker") {
-      let market = this._tickerSubs.get(remote_id);
-      if (!market) return;
+    // if (msg.method === "ticker") {
+    //   let market = this._tickerSubs.get(remote_id);
+    //   if (!market) return;
 
-      let ticker = this._constructTicker(msg.params, market);
-      this.emit("ticker", ticker, market);
-    }
+    //   let ticker = this._constructTicker(msg.params, market);
+    //   this.emit("ticker", ticker, market);
+    // }
 
-    if (msg.method === "updateTrades") {
-      let market = this._tradeSubs.get(remote_id);
-      if (!market) return;
+    if (msg.ch === "trades") {
+      for(let remote_id in msg.update) {
+        let market = this._tradeSubs.get(remote_id);
+        if (!market) return;
 
-      for (let datum of msg.params.data) {
-        let trade = this._constructTradesFromMessage(datum, market);
-        this.emit("trade", trade, market);
-      }
-      return;
-    }
-
-    if (msg.method === "updateCandles") {
-      let market = this._candleSubs.get(remote_id);
-      if (!market) return;
-
-      for (let datum of msg.params.data) {
-        let candle = this._constructCandle(datum, market);
-        this.emit("candle", candle, market);
+        for (let datum of msg.update[remote_id]) {
+          let trade = this._constructTradesFromMessage(datum, market);
+          this.emit("trade", trade, market);
+        }
+        return;
       }
     }
 
-    if (msg.method === "snapshotOrderbook") {
-      let market = this._level2UpdateSubs.get(remote_id); // coming from l2update sub
-      if (!market) return;
+    // if (msg.method === "updateCandles") {
+    //   let market = this._candleSubs.get(remote_id);
+    //   if (!market) return;
 
-      let result = this._constructLevel2Snapshot(msg.params, market);
-      this.emit("l2snapshot", result, market);
-      return;
-    }
+    //   for (let datum of msg.params.data) {
+    //     let candle = this._constructCandle(datum, market);
+    //     this.emit("candle", candle, market);
+    //   }
+    // }
 
-    if (msg.method === "updateOrderbook") {
-      let market = this._level2UpdateSubs.get(remote_id);
-      if (!market) return;
+    // if (msg.method === "snapshotOrderbook") {
+    //   let market = this._level2UpdateSubs.get(remote_id); // coming from l2update sub
+    //   if (!market) return;
 
-      let result = this._constructLevel2Update(msg.params, market);
-      this.emit("l2update", result, market);
-      return;
-    }
+    //   let result = this._constructLevel2Snapshot(msg.params, market);
+    //   this.emit("l2snapshot", result, market);
+    //   return;
+    // }
+
+    // if (msg.method === "updateOrderbook") {
+    //   let market = this._level2UpdateSubs.get(remote_id);
+    //   if (!market) return;
+
+    //   let result = this._constructLevel2Update(msg.params, market);
+    //   this.emit("l2update", result, market);
+    //   return;
+    // }
   }
 
   _constructTicker(param, market) {
@@ -217,19 +220,19 @@ class HitBTCClient extends BasicClient {
   }
 
   _constructTradesFromMessage(datum, market) {
-    let { id, price, quantity, side, timestamp } = datum;
+    let { t, i, p, q, s } = datum;
 
-    let unix = moment(timestamp).valueOf();
+    let unix = moment(t).valueOf();
 
     return new Trade({
       exchange: "HitBTC",
       base: market.base,
       quote: market.quote,
-      tradeId: id.toFixed(),
-      side,
+      tradeId: i.toFixed(),
+      side: s,
       unix,
-      price,
-      amount: quantity,
+      price: p,
+      amount: q,
     });
   }
 

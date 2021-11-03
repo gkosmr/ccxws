@@ -9,7 +9,7 @@ const Level3Snapshot = require("../level3-snapshot");
 const Level3Update = require("../level3-update");
 
 class BitfinexClient extends BasicClient {
-  constructor({ wssPath = "wss://api.bitfinex.com/ws/2", watcherMs, l2UpdateDepth = 250 } = {}) {
+  constructor({ wssPath = "wss://api-pub.bitfinex.com/ws/2", watcherMs, l2UpdateDepth = 250 } = {}) {
     super(wssPath, "Bitfinex", undefined, watcherMs);
     this._channels = {};
 
@@ -61,7 +61,7 @@ class BitfinexClient extends BasicClient {
       JSON.stringify({
         event: "subscribe",
         channel: "trades",
-        pair: remote_id,
+        symbol: remote_id,
       })
     );
   }
@@ -136,6 +136,11 @@ class BitfinexClient extends BasicClient {
       return;
     }
 
+    if(msg.event === 'error') {
+      this.emit("error", `${msg.pair}: ${msg.msg}`);
+      return;
+    }
+
     // lookup channel
     let channel = this._channels[msg[0]];
     if (!channel) return;
@@ -153,7 +158,7 @@ class BitfinexClient extends BasicClient {
 
     // trades
     if (channel.channel === "trades" && msg[1] === "tu") {
-      let market = this._tradeSubs.get(channel.pair);
+      let market = this._tradeSubs.get(channel.symbol);
       if (!market) return;
 
       this._onTradeMessage(msg, market);

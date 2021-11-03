@@ -69,7 +69,8 @@ class KrakenClient extends BasicClient {
       let wsName = result[symbol].wsname;
       if (wsName) {
         this.fromRestMap.set(restName, wsName);
-        this.fromWsMap.set(wsName, restName);
+        this.fromRestMap.set(result[symbol].altname, wsName);
+        this.fromWsMap.set(wsName, result[symbol].altname || restName);
       }
     }
   }
