@@ -67,7 +67,7 @@ class BitrueClient extends BasicClient {
   _constructTrades(datum, market) {
     let { id, price, amount, side, vol, ts, ds } = datum;
     return new Trade({
-      exchange: "Bitrex",
+      exchange: "Bitrue",
       base: market.base,
       quote: market.quote,
       id: market.id,
