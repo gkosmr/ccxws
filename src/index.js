@@ -5,6 +5,7 @@ const binanceus = require("./exchanges/binanceus-client");
 const bitfinex = require("./exchanges/bitfinex-client");
 const bitflyer = require("./exchanges/bitflyer-client");
 const bitmex = require("./exchanges/bitmex-client");
+const bitrue = require("./exchanges/bitrue-client");
 const bitstamp = require("./exchanges/bitstamp-client");
 const bittrex = require("./exchanges/bittrex-client");
 const cex = require("./exchanges/cex-client");
@@ -33,6 +34,7 @@ module.exports = {
   bitfinex,
   bitflyer,
   bitmex,
+  bitrue,
   bitstamp,
   bittrex,
   cex,
@@ -66,6 +68,7 @@ module.exports = {
   Bitflyer: bitflyer,
   Bithumb: require("./exchanges/bithumb-client"),
   BitMEX: bitmex,
+  Bitrue: bitrue,
   Bitstamp: bitstamp,
   Bittrex: bittrex,
   Cex: cex,
