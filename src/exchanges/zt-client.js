@@ -83,7 +83,6 @@ class ZtClient extends BasicClient {
       let market = this._tradeSubs.get(remote_id);
       if(market) {
         for(let datum of message.params[1]) {
-          console.log(datum);
           let trade = this._constructTrades(datum, market);
           this.emit("trade", trade, market);
         }
