@@ -45,10 +45,9 @@ class KucoinClient extends BasicClient {
     this._requestLevel3Snapshot.cancel();
   }
 
-  _beforeConnect() {
-    this._wss.on("connected", this._startPing.bind(this));
-    this._wss.on("disconnected", this._stopPing.bind(this));
-    this._wss.on("closed", this._stopPing.bind(this));
+  _onConnected() {
+    this._startPing()
+    super._onConnected();
   }
 
   _startPing() {
@@ -58,8 +57,18 @@ class KucoinClient extends BasicClient {
 
   _stopPing() {
     clearInterval(this._pingInterval);
-    this._wss = undefined;
+  }
+
+  _onDisconnected() {
+    super._onDisconnected();
+    this.close();
     this.wssPath = undefined;
+    this.reconnect();
+  }
+
+  _onClosed() {
+    this._stopPing();
+    super._onClosed();
   }
 
   _sendPing() {
