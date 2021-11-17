@@ -58,6 +58,8 @@ class KucoinClient extends BasicClient {
 
   _stopPing() {
     clearInterval(this._pingInterval);
+    this._wss = undefined;
+    this.wssPath = undefined;
   }
 
   _sendPing() {
