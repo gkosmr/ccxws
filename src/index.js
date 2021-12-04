@@ -43,6 +43,7 @@ module.exports = {
   coinbasepro,
   coinex,
   ethfinex,
+  digifinex
   ftx,
   fmfw,
   gateio,
