@@ -1,5 +1,6 @@
 const BasicClient = require("../basic-client");
 const Trade = require("../trade");
+const Ticker = require("../ticker");
 const zlib = require("zlib");
 const moment = require("moment");
 
@@ -10,7 +11,7 @@ class ZtClient extends BasicClient {
    */
   constructor({ wssPath = "wss://www.ztb.im/ws", watcherMs } = {}) {
     super(wssPath, "ZT", undefined, watcherMs);
-    this.hasTickers = false;
+    this.hasTickers = true;
     this.hasTrades = true;
     this.hasCandles = false;
     this.hasLevel2Updates = false;
@@ -48,7 +49,7 @@ class ZtClient extends BasicClient {
   _debounceSend(debounceKey, subMap, subscribe) {
     this._debounce(debounceKey, () => {
       if (!this._wss) return;
-      let symbols = Array.from( this._tradeSubs.keys() );
+      let symbols = Array.from( subMap.keys() );
       let id = ++this.id;
       this._wss.send(
         JSON.stringify(
@@ -70,6 +71,14 @@ class ZtClient extends BasicClient {
     this._debounceSend("deals.unsubscribe", this._tradeSubs, false);
   }
 
+  _sendSubTicker() {
+    this._debounceSend("state.subscribe", this._tickerSubs, true);
+  }
+
+  _sendUnsubTicker() {
+    this._debounceSend("state.unsubscribe", this._tickerSubs, false);
+  }
+
   _onMessage(msgs) {
     let message = JSON.parse(msgs);
 
@@ -87,8 +96,14 @@ class ZtClient extends BasicClient {
           this.emit("trade", trade, market);
         }
       }
-
-
+      return;
+    } else if(message.method == 'state.update') {
+      let remote_id = message.params[0];
+      let market = this._tickerSubs.get(remote_id);
+      if(market) {
+        let ticker = this._constructTicker(message.params[1], market);
+        this.emit("ticker", ticker, market);
+      }
       return;
     }
   }
@@ -105,6 +120,20 @@ class ZtClient extends BasicClient {
       side: type.toLowerCase(),
       price,
       amount
+    });
+  }
+
+  _constructTicker(datum, market) {
+    let { last, volume, deal, period, high, open, low, close } = datum;
+    return new Ticker({
+      exchange: "ZT",
+      base: market.base,
+      quote: market.quote,
+      id: market.id,
+      high,
+      open,
+      low,
+      volume
     });
   }
 }

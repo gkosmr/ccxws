@@ -60,10 +60,9 @@ class KucoinClient extends BasicClient {
   }
 
   _onDisconnected() {
+    this.wssPath = undefined;
     super._onDisconnected();
     this.close();
-    this.wssPath = undefined;
-    this.reconnect();
   }
 
   _onClosed() {

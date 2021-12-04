@@ -266,6 +266,7 @@ class GeminiClient extends EventEmitter {
         - Each time you reconnect, the sequence number resets to zero.
         - If you have multiple WebSocket connections, each will have a separate sequence number beginning with zero - make sure to keep track of each sequence number separately!
       */
+      this.emit("ping");
       if (subscription.level2updates) {
         /*
           So when subbed to l2 updates using sequenceId, a heartbeat event will arrive which includes sequenceId.

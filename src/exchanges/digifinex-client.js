@@ -18,6 +18,17 @@ class DigifinexClient extends BasicClient {
     this.hasLevel2Updates = true;
     this.id = 0;
     this._onMessageInf = this._onMessageInf.bind(this);
+    setInterval(this._sendPing.bind(this), 60*1000);
+  }
+
+  _sendPing() {
+    this._wss.send(
+      JSON.stringify({
+        method: "server.ping",
+        params: [],
+        id: ++this.id,
+      })
+    );
   }
 
   _sendSubTicker(remote_id) {
@@ -111,13 +122,18 @@ class DigifinexClient extends BasicClient {
       return;
     }
 
+    if(msg && msg.result == 'pong') {
+      this.emit("ping");
+      return;
+    }
+
     // handle ticker
     if (msg.method === "ticker.update") {
       for (let datum of msg.params) {
         let remote_id = datum.symbol;
         let market =
-          this._tickerSubs.get(remote_id).toUpperCase() ||
-          this._tickerSubs.get(remote_id.toLowerCase());
+          this._tickerSubs.get(remote_id) ||
+          this._tickerSubs.get(remote_id);
         if (!market) continue;
 
         let ticker = this._constructTicker(datum, market);
@@ -130,8 +146,8 @@ class DigifinexClient extends BasicClient {
     if (msg.method == "trades.update") {
       let remote_id = msg.params[2];
       let market =
-        this._tradeSubs.get(remote_id).toUpperCase() ||
-        this._tradeSubs.get(remote_id.toLowerCase());
+        this._tradeSubs.get(remote_id) ||
+        this._tradeSubs.get(remote_id);
       if (!market) return;
 
       // trades arrive newest first
@@ -146,8 +162,8 @@ class DigifinexClient extends BasicClient {
     if (msg.method === "depth.update") {
       let remote_id = msg.params[2];
       let market =
-        this._level2UpdateSubs.get(remote_id).toUpperCase() ||
-        this._level2UpdateSubs.get(remote_id.toLowerCase());
+        this._level2UpdateSubs.get(remote_id) ||
+        this._level2UpdateSubs.get(remote_id);
       if (!market) return;
 
       let snapshot = msg.params[0];

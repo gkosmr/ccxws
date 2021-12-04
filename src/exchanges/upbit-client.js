@@ -14,6 +14,11 @@ class UpbitClient extends BasicClient {
 
     this.debouceTimeoutHandles = new Map();
     this.debounceWait = 200;
+    setInterval(this._sendPing.bind(this), 100*1000); // every 100s, else connection is closed after 120s
+  }
+
+  _sendPing() {
+    this._wss.send("PING");
   }
 
   _sendSubTicker() {
@@ -80,7 +85,11 @@ class UpbitClient extends BasicClient {
   }
 
   _processsMessage(msg) {
-    // console.log(msg);
+    // ping response
+    if(msg && msg.status == 'UP') {
+      this.emit('ping');
+      return;
+    }
 
     // trades
     if (msg.type === "trade") {
