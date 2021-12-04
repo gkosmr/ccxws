@@ -26,6 +26,7 @@ const okex = require("./exchanges/okex-client");
 const poloniex = require("./exchanges/poloniex-client");
 const upbit = require("./exchanges/upbit-client");
 const zb = require("./exchanges/zb-client");
+const digifinex = require("./exchanges/digifinex-client");
 
 module.exports = {
   // export all legacy exchange names
