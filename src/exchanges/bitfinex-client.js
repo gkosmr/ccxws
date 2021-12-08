@@ -36,6 +36,7 @@ class BitfinexClient extends BasicClient {
     this._wss.send(JSON.stringify({ event: "conf", flags: 65536 + 32768 }));
   }
 
+
   _sendSubTicker(remote_id) {
     this._wss.send(
       JSON.stringify({
@@ -146,7 +147,10 @@ class BitfinexClient extends BasicClient {
     if (!channel) return;
 
     // ignore heartbeats
-    if (msg[1] === "hb") return;
+    if (msg[1] === "hb") {
+      this.emit('ping');
+      return;
+    }
 
     if (channel.channel === "ticker") {
       let market = this._tickerSubs.get(channel.pair);

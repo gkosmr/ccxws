@@ -18,7 +18,7 @@ class DigifinexClient extends BasicClient {
     this.hasLevel2Updates = true;
     this.id = 0;
     this._onMessageInf = this._onMessageInf.bind(this);
-    setInterval(this._sendPing.bind(this), 60*1000);
+    setInterval(this._sendPing.bind(this), 20*1000);
   }
 
   _sendPing() {
