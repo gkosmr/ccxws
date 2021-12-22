@@ -20,7 +20,6 @@ class BitrueClient extends BasicClient {
   }
 
   _sendPong() {
-    console.log("pong....");
     this._wss.send(
       JSON.stringify({
         pong: new Date().getTime()

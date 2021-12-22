@@ -11,6 +11,7 @@ const bittrex = require("./exchanges/bittrex-client");
 const cex = require("./exchanges/cex-client");
 const coinbasepro = require("./exchanges/coinbasepro-client");
 const coinex = require("./exchanges/coinex-client");
+const coinflex = require("./exchanges/coinflex-client");
 const ethfinex = require("./exchanges/ethfinex-client");
 const fmfw = require("./exchanges/fmfw-client");
 const ftx = require("./exchanges/ftx-client");
@@ -43,6 +44,7 @@ module.exports = {
   cex,
   coinbasepro,
   coinex,
+  coinflex,
   ethfinex,
   digifinex,
   ftx,
@@ -80,6 +82,7 @@ module.exports = {
   Cex: cex,
   CoinbasePro: coinbasepro,
   Coinex: coinex,
+  CoinFlex: coinflex,
   Deribit: require("./exchanges/deribit-client"),
   Digifinex: require("./exchanges/digifinex-client"),
   Ethfinex: ethfinex,
