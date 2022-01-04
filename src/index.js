@@ -21,6 +21,7 @@ const hitbtc = require("./exchanges/hitbtc-client");
 const huobi = require("./exchanges/huobi-client");
 const kucoin = require("./exchanges/kucoin-client");
 const kraken = require("./exchanges/kraken-client");
+const lbank = require("./exchanges/lbank-client");
 const liquid = require("./exchanges/liquid-client");
 const zt = require("./exchanges/zt-client");
 const okex = require("./exchanges/okex-client");
@@ -57,6 +58,7 @@ module.exports = {
   huobipro: huobi,
   kucoin,
   kraken,
+  lbank,
   liquid,
   zt,
   okex,
@@ -102,6 +104,7 @@ module.exports = {
   Kucoin: kucoin,
   Kraken: kraken,
   LedgerX: require("./exchanges/ledgerx-client"),
+  LBank: lbank,
   Liquid: liquid,
   Zt: zt,
   OKEx: okex,
