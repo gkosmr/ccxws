@@ -81,8 +81,6 @@ class LBankClient extends BasicClient {
   _onMessage(msg) {
     let message = JSON.parse(msg);
 
-    console.log(message);
-
     if(message.action == 'ping') {
       this._sendPong(message.ping);
       return;
