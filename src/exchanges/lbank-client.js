@@ -94,7 +94,7 @@ class LBankClient extends BasicClient {
       }
       return;
     } else if(message.type == 'tick' && message.tick) {
-      let market = this._tradeSubs.get(message.pair);
+      let market = this._tickerSubs.get(message.pair);
       if(market) {
         let ticker = this._constructTicker(message.tick, market);
         this.emit("ticker", ticker, market);
