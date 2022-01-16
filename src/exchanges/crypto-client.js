@@ -81,13 +81,9 @@ class CryptoClient extends BasicClient {
   }
 
   _sendSubTrades(remote_id) {
-    if(!this.debouceTimeoutHandles.get('trade')) {
-      setTimeout(function() {
-        this._debounceSend('trade', this._tradeSubs, true);
-      }.bind(this), 1000);
-    } else {
-        this._debounceSend('trade', this._tradeSubs, true);
-    }
+    setTimeout(function() {
+      this._debounceSend('trade', this._tradeSubs, true);
+    }.bind(this), 1500);
   }
 
   _sendUnsubTrades(remote_id) {
@@ -95,13 +91,9 @@ class CryptoClient extends BasicClient {
   }
 
   _sendSubTicker(remote_id) {
-    if(!this.debouceTimeoutHandles.get('ticker')) {
-      setTimeout(function() {
-        this._debounceSend('ticker', this._tickerSubs, true);
-      }.bind(this), 2000);
-    } else {
-        this._debounceSend('ticker', this._tickerSubs, true);
-    }
+    setTimeout(function() {
+      this._debounceSend('ticker', this._tickerSubs, true);
+    }.bind(this), 2500);
   }
 
   _sendUnsubTicker(remote_id) {
