@@ -1,3 +1,4 @@
+const ascendex = require("./exchanges/ascendex-client");
 const bibox = require("./exchanges/bibox-client");
 const binance = require("./exchanges/binance-client");
 const binanceje = require("./exchanges/binanceje-client");
@@ -8,6 +9,7 @@ const bitmex = require("./exchanges/bitmex-client");
 const bitrue = require("./exchanges/bitrue-client");
 const bitstamp = require("./exchanges/bitstamp-client");
 const bittrex = require("./exchanges/bittrex-client");
+const bybit = require("./exchanges/bybit-client");
 const cex = require("./exchanges/cex-client");
 const coinbasepro = require("./exchanges/coinbasepro-client");
 const coinex = require("./exchanges/coinex-client");
@@ -33,6 +35,7 @@ const digifinex = require("./exchanges/digifinex-client");
 
 module.exports = {
   // export all legacy exchange names
+  ascendex,
   bibox,
   binance,
   binanceje,
@@ -43,6 +46,7 @@ module.exports = {
   bitrue,
   bitstamp,
   bittrex,
+  bybit,
   cex,
   coinbasepro,
   coinex,
@@ -70,6 +74,7 @@ module.exports = {
   zb,
 
   // export all exchanges
+  Ascendex: ascendex,
   Bibox: bibox,
   Binance: binance,
   BinanceFuturesCoinM: require("./exchanges/binance-futures-coinm-client"),
@@ -83,6 +88,7 @@ module.exports = {
   Bitrue: bitrue,
   Bitstamp: bitstamp,
   Bittrex: bittrex,
+  ByBit: bybit,
   Cex: cex,
   CoinbasePro: coinbasepro,
   Coinex: coinex,
