@@ -342,6 +342,8 @@ class BiboxBasicClient extends BasicClient {
       msg.data = JSON.parse(buffer);
     }
 
+    console.log(msg);
+
     // server will occassionally send a ping message and client
     // must respon with appropriate identifier
     if (msg.ping) {
@@ -468,18 +470,18 @@ class BiboxBasicClient extends BasicClient {
           price: 0.0000359,
           amount: 6.1281,
           side: 2,
-          id: 189765713 } ]
+          tid: 189765713 } ]
     }
   */
   _constructTradesFromMessage(datum, market) {
-    let { time, price, amount, side, id } = datum;
+    let { time, price, amount, side, tid } = datum;
 
     side = side === 1 ? "buy" : "sell";
     return new Trade({
       exchange: "Bibox",
       base: market.base,
       quote: market.quote,
-      tradeId: id,
+      tradeId: tid,
       side,
       unix: time,
       price,
