@@ -18,6 +18,7 @@ const crypto = require("./exchanges/crypto-client");
 const ethfinex = require("./exchanges/ethfinex-client");
 const fmfw = require("./exchanges/fmfw-client");
 const ftx = require("./exchanges/ftx-client");
+const ftxus = require("./exchanges/ftx-us-client");
 const gateio = require("./exchanges/gateio-client");
 const gemini = require("./exchanges/gemini-client");
 const hitbtc = require("./exchanges/hitbtc-client");
@@ -100,7 +101,7 @@ module.exports = {
   ErisX: require("./exchanges/erisx-client"),
   Fmfw: fmfw,
   Ftx: ftx,
-  FtxUs: require("./exchanges/ftx-us-client"),
+  FtxUs: ftxus,
   Gateio: gateio,
   Gemini: gemini,
   HitBTC: hitbtc,
