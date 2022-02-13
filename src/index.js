@@ -56,6 +56,7 @@ module.exports = {
   ethfinex,
   digifinex,
   ftx,
+  ftxus,
   fmfw,
   gateio,
   gemini,
