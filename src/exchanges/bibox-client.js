@@ -342,7 +342,7 @@ class BiboxBasicClient extends BasicClient {
       msg.data = JSON.parse(buffer);
     }
 
-    console.log(msg);
+    // console.log(msg);
 
     // server will occassionally send a ping message and client
     // must respon with appropriate identifier
