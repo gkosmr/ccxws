@@ -14,8 +14,8 @@ const pongBuffer = Buffer.from("pong");
 
 class OKExClient extends BasicClient {
   /**
-   * Implements OKEx V3 WebSocket API as defined in
-   * https://www.okex.com/docs/en/#spot_ws-general
+   * Implements OKEx V5 WebSocket API as defined in
+   * https://www.okx.com/docs-v5/en/#websocket-api
    *
    * Limits:
    *    1 connection / second
@@ -33,7 +33,7 @@ class OKExClient extends BasicClient {
    *
    * Refer to: https://www.okex.com/docs/en/#spot_ws-checksum
    */
-  constructor({ wssPath = "wss://real.okex.com:8443/ws/v3", watcherMs, sendThrottleMs = 20 } = {}) {
+  constructor({ wssPath = "wss://ws.okx.com:8443/ws/v5/public", watcherMs, sendThrottleMs = 20 } = {}) {
     super(wssPath, "OKEx", undefined, watcherMs);
     this.candlePeriod = CandlePeriod._1m;
     this.hasTickers = true;
@@ -120,8 +120,13 @@ class OKExClient extends BasicClient {
   _sendSubTicker(remote_id, market) {
     this._sendMessage(
       JSON.stringify({
-        op: "subscribe",
-        args: [this._marketArg("ticker", market)],
+        "op": "subscribe",
+        "args": [
+          {
+            "channel": "tickers",
+            "instId": remote_id
+          }
+        ]
       })
     );
   }
@@ -129,8 +134,13 @@ class OKExClient extends BasicClient {
   _sendUnsubTicker(remote_id, market) {
     this._sendMessage(
       JSON.stringify({
-        op: "unsubscribe",
-        args: [this._marketArg("ticker", market)],
+        "op": "unsubscribe",
+        "args": [
+          {
+            "channel": "tickers",
+            "instId": remote_id
+          }
+        ]
       })
     );
   }
@@ -138,8 +148,13 @@ class OKExClient extends BasicClient {
   _sendSubTrades(remote_id, market) {
     this._sendMessage(
       JSON.stringify({
-        op: "subscribe",
-        args: [this._marketArg("trade", market)],
+        "op": "subscribe",
+        "args": [
+          {
+            "channel": "trades",
+            "instId": remote_id
+          }
+        ]
       })
     );
   }
@@ -147,8 +162,13 @@ class OKExClient extends BasicClient {
   _sendUnsubTrades(remote_id, market) {
     this._sendMessage(
       JSON.stringify({
-        op: "unsubscribe",
-        args: [this._marketArg("trade", market)],
+        "op": "unsubscribe",
+        "args": [
+          {
+            "channel": "trades",
+            "instId": remote_id
+          }
+        ]
       })
     );
   }
@@ -207,29 +227,17 @@ class OKExClient extends BasicClient {
     );
   }
 
-  _onMessage(compressed) {
-    zlib.inflateRaw(compressed, (err, raw) => {
-      if (err) {
-        this.emit("error", err);
-        return;
-      }
-
-      // ignore pongs
-      if (raw.equals(pongBuffer)) {
-        return;
-      }
-
-      // process JSON message
-      try {
-        let msg = JSON.parse(raw);
-        this._processsMessage(msg);
-      } catch (ex) {
-        this.emit("error", ex);
-      }
-    });
+  _onMessage(message) {
+    if(message == 'pong') {
+      this.emit("ping");
+    } else {
+      let msg = JSON.parse(message);
+      this._processsMessage(msg);
+    }
   }
 
   _processsMessage(msg) {
+    // console.log(msg);
     // clear semaphore on subscription event reply
     if (msg.event === "subscribe") {
       return;
@@ -248,55 +256,43 @@ class OKExClient extends BasicClient {
     }
 
     // tickers
-    if (msg.table.match(/ticker/)) {
+    if (msg.arg.channel == 'tickers') {
       this._processTicker(msg);
       return;
     }
 
     // trades
-    if (msg.table.match(/trade/)) {
+    if (msg.arg.channel == 'trades') {
       this._processTrades(msg);
-      return;
-    }
-
-    // candles
-    if (msg.table.match(/candle/)) {
-      this._processCandles(msg);
-      return;
-    }
-
-    // l2 snapshots
-    if (msg.table.match(/depth5/)) {
-      this._processLevel2Snapshot(msg);
-      return;
-    }
-
-    // l2 updates
-    if (msg.table.match(/depth/)) {
-      this._processLevel2Update(msg);
       return;
     }
   }
 
   /**
    * Process ticker messages in the format
-    { table: 'spot/ticker',
-      data:
-      [ { instrument_id: 'ETH-BTC',
-          last: '0.02181',
-          best_bid: '0.0218',
-          best_ask: '0.02181',
-          open_24h: '0.02247',
-          high_24h: '0.02262',
-          low_24h: '0.02051',
-          base_volume_24h: '379522.2418555',
-          quote_volume_24h: '8243.729793336415',
-          timestamp: '2019-07-15T17:10:55.671Z' } ] }
+    { arg: { channel: 'tickers', instId: 'BTC-USDT' },
+  data:
+   [ { instType: 'SPOT',
+       instId: 'BTC-USDT',
+       last: '40000',
+       lastSz: '0.00003401',
+       askPx: '39986.9',
+       askSz: '0.0001',
+       bidPx: '39986.8',
+       bidSz: '1.04651415',
+       open24h: '39313.8',
+       high24h: '41738.1',
+       low24h: '38820',
+       sodUtc0: '39288.7',
+       sodUtc8: '40617.9',
+       volCcy24h: '894494161.80911719',
+       vol24h: '22300.84552052',
+       ts: '1647456456777' } ] }
    */
   _processTicker(msg) {
     for (let datum of msg.data) {
       // ensure market
-      let remoteId = datum.instrument_id;
+      let remoteId = datum.instId;
       let market = this._tickerSubs.get(remoteId);
       if (!market) continue;
 
@@ -308,19 +304,19 @@ class OKExClient extends BasicClient {
 
   /**
    * Processes trade messages in the format
-    { table: 'spot/trade',
-      data:
-      [ { instrument_id: 'ETH-BTC',
-          price: '0.0218',
-          side: 'sell',
-          size: '1.1',
-          timestamp: '2019-07-15T17:10:56.047Z',
-          trade_id: '776432498' } ] }
+    { arg: { channel: 'trades', instId: 'BTC-USDT' },
+  data:
+   [ { instId: 'BTC-USDT',
+       tradeId: '320147586',
+       px: '39484.3',
+       sz: '0.00169604',
+       side: 'buy',
+       ts: '1647455745438' } ] }
    */
   _processTrades(msg) {
     for (let datum of msg.data) {
       // ensure market
-      let remoteId = datum.instrument_id;
+      let remoteId = datum.instId;
       let market = this._tradeSubs.get(remoteId);
       if (!market) continue;
 
@@ -434,76 +430,85 @@ class OKExClient extends BasicClient {
 
   /**
    * Constructs a ticker from the datum in the format:
-      { instrument_id: 'ETH-BTC',
-        last: '0.02172',
-        best_bid: '0.02172',
-        best_ask: '0.02173',
-        open_24h: '0.02254',
-        high_24h: '0.02262',
-        low_24h: '0.02051',
-        base_volume_24h: '378400.064179',
-        quote_volume_24h: '8226.4437921288',
-        timestamp: '2019-07-15T16:10:40.193Z' }
+      {instType: 'SPOT',
+       instId: 'BTC-USDT',
+       last: '40000',
+       lastSz: '0.00003401',
+       askPx: '39986.9',
+       askSz: '0.0001',
+       bidPx: '39986.8',
+       bidSz: '1.04651415',
+       open24h: '39313.8',
+       high24h: '41738.1',
+       low24h: '38820',
+       sodUtc0: '39288.7',
+       sodUtc8: '40617.9',
+       volCcy24h: '894494161.80911719',
+       vol24h: '22300.84552052',
+       ts: '1647456456777' }
    */
   _constructTicker(data, market) {
     let {
+      instType,
+      instId,
       last,
-      best_bid,
-      best_bid_size,
-      best_ask,
-      best_ask_size,
-      open_24h,
-      high_24h,
-      low_24h,
-      base_volume_24h,
-      volume_24h, // found in futures
-      timestamp,
+      lastSz,
+      askPx,
+      askSz,
+      bidPx,
+      bidSz,
+      open24h,
+      high24h,
+      low24h,
+      sodUtc0,
+      sodUtc8,
+      volCcy24h,
+      vol24h,
+      ts
     } = data;
 
-    let change = parseFloat(last) - parseFloat(open_24h);
-    let changePercent = change / parseFloat(open_24h);
-    let ts = moment.utc(timestamp).valueOf();
+    let change = parseFloat(last) - parseFloat(open24h);
+    let changePercent = change / parseFloat(open24h);
     return new Ticker({
       exchange: "OKEx",
       base: market.base,
       quote: market.quote,
       timestamp: ts,
       last,
-      open: open_24h,
-      high: high_24h,
-      low: low_24h,
-      volume: base_volume_24h || volume_24h,
+      open: open24h,
+      high: high24h,
+      low: low24h,
+      volume: vol24h,
       change: change.toFixed(8),
       changePercent: changePercent.toFixed(2),
-      bid: best_bid || "0",
-      bidVolume: best_bid_size || "0",
-      ask: best_ask || "0",
-      askVolume: best_ask_size || "0",
+      bid: bidPx || "0",
+      bidVolume: bidSz || "0",
+      ask: askPx || "0",
+      askVolume: askSz || "0",
     });
   }
 
   /**
    * Constructs a trade from the message datum in format:
-    { instrument_id: 'ETH-BTC',
-      price: '0.02182',
-      side: 'sell',
-      size: '0.94',
-      timestamp: '2019-07-15T16:38:02.169Z',
-      trade_id: '776370532' }
+    { instId: 'BTC-USDT',
+       tradeId: '320147586',
+       px: '39484.3',
+       sz: '0.00169604',
+       side: 'buy',
+       ts: '1647455745438' }
     */
   _constructTrade(datum, market) {
-    let { price, side, size, timestamp, trade_id, qty } = datum;
-    let ts = moment.utc(timestamp).valueOf();
+    let { instId, tradeId, px, sz, side, ts } = datum;
 
     return new Trade({
       exchange: "OKEx",
       base: market.base,
       quote: market.quote,
-      tradeId: trade_id,
+      tradeId,
       side,
       unix: ts,
-      price,
-      amount: size || qty,
+      price: px,
+      amount: sz,
     });
   }
 
