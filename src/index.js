@@ -28,6 +28,7 @@ const kucoin = require("./exchanges/kucoin-client");
 const kraken = require("./exchanges/kraken-client");
 const lbank = require("./exchanges/lbank-client");
 const liquid = require("./exchanges/liquid-client");
+const mexc = require("./exchanges/mexc-client");
 const zt = require("./exchanges/zt-client");
 const okex = require("./exchanges/okex-client");
 const poloniex = require("./exchanges/poloniex-client");
@@ -70,6 +71,7 @@ module.exports = {
   kraken,
   lbank,
   liquid,
+  mexc,
   zt,
   okex,
   okex3: okex,
