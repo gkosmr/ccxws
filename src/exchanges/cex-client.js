@@ -107,36 +107,6 @@ class SingleCexClient extends BasicClient {
     return this.parent.candlePeriod;
   }
 
-  /**
-   * This method is fired anytime the socket is opened, whether
-   * the first time, or any subsequent reconnects.
-   * Since this is an authenticated feed, we first send an authenticate
-   * request, and the normal subscriptions happen after authentication has
-   * completed in the _onAuthorized method.
-   */
-  _onConnected() {
-    this._sendAuthorizeRequest();
-  }
-
-  /**
-   * Trigger after an authorization packet has been successfully received.
-   * This code triggers the usual _onConnected code afterwards.
-   */
-  _onAuthorized() {
-    this.authorized = true;
-    this.emit("authorized");
-    super._onConnected();
-  }
-
-  _sendAuthorizeRequest() {
-    this._wss.send(
-      JSON.stringify({
-        e: "auth",
-        auth: createAuthToken(this.auth.apiKey, this.auth.apiSecret),
-      })
-    );
-  }
-
   _sendPong() {
     if (this._wss) {
       this._wss.send(JSON.stringify({ e: "pong" }));
@@ -144,7 +114,6 @@ class SingleCexClient extends BasicClient {
   }
 
   _sendSubTicker() {
-    if (!this.authorized) return;
     this._wss.send(
       JSON.stringify({
         e: "subscribe",
@@ -156,11 +125,10 @@ class SingleCexClient extends BasicClient {
   _sendUnsubTicker() {}
 
   _sendSubTrades(remote_id) {
-    if (!this.authorized) return;
     this._wss.send(
       JSON.stringify({
         e: "subscribe",
-        rooms: [`pair-${remote_id.replace("/", "-")}`],
+        rooms: [`pair-${remote_id}`],
       })
     );
   }
@@ -193,6 +161,7 @@ class SingleCexClient extends BasicClient {
   _sendUnsubLevel2Snapshots() {}
 
   _onMessage(raw) {
+    this.emit('ping');
     let message = JSON.parse(raw);
     let { e, data } = message;
 
