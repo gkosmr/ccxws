@@ -68,7 +68,7 @@ class BitmartClient extends BasicClient {
     let message = JSON.parse(msgs);
 
     if(message.table == 'spot/trade') {
-      for(let datum in message.data) {
+      for(let datum of message.data) {
         let market = this._tradeSubs.get(datum.symbol);
         if(market) {
           let trade = this._constructTrades(datum, market);
