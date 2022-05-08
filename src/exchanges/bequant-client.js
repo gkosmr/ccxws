@@ -85,7 +85,6 @@ class BequantClient extends BasicClient {
   }
 
   _onMessage(msg) {
-    console.log(msg);
     let message = JSON.parse(msg);
 
     if(message.ch) {    
