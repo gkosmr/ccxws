@@ -1,5 +1,6 @@
 const aax = require("./exchanges/aax-client");
 const ascendex = require("./exchanges/ascendex-client");
+const bequant = require("./exchanges/bequant-client");
 const bibox = require("./exchanges/bibox-client");
 const binance = require("./exchanges/binance-client");
 const binanceje = require("./exchanges/binanceje-client");
@@ -42,6 +43,7 @@ module.exports = {
   // export all legacy exchange names
   aax,
   ascendex,
+  bequant,
   bibox,
   binance,
   binanceje,
