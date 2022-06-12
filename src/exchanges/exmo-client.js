@@ -113,7 +113,7 @@ class ExmoClient extends BasicClient {
       quote: market.quote,
       id: market.id,
       tradeId: trade_id,
-      unix: date,
+      unix: parseInt(date)*1000,
       side: type,
       price,
       amount
