@@ -1,4 +1,5 @@
 const aax = require("./exchanges/aax-client");
+const aex = require("./exchanges/aex-client");
 const ascendex = require("./exchanges/ascendex-client");
 const bequant = require("./exchanges/bequant-client");
 const bibox = require("./exchanges/bibox-client");
