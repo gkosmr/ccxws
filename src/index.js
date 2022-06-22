@@ -44,6 +44,7 @@ const digifinex = require("./exchanges/digifinex-client");
 module.exports = {
   // export all legacy exchange names
   aax,
+  aex,
   ascendex,
   bequant,
   bibox,
