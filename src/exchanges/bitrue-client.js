@@ -20,11 +20,13 @@ class BitrueClient extends BasicClient {
   }
 
   _sendPong() {
-    this._wss.send(
-      JSON.stringify({
-        pong: new Date().getTime()
-      })
-    );
+    if (this._wss) {
+      this._wss.send(
+        JSON.stringify({
+          pong: new Date().getTime()
+        })
+      );
+    }
   }
 
   _sendSubTrades(remote_id) {

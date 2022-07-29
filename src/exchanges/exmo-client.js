@@ -20,11 +20,13 @@ class ExmoClient extends BasicClient {
   }
 
   _sendPing() {
-    this._wss.send(
-      JSON.stringify({
-        op: 'ping'
-      })
-    );
+    if (this._wss) {
+      this._wss.send(
+        JSON.stringify({
+          op: 'ping'
+        })
+      );
+    }
   }
 
   _sendPong() {

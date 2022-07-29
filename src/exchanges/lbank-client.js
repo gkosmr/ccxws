@@ -21,21 +21,25 @@ class LBankClient extends BasicClient {
   }
 
   _sendPing() {
-    this._wss.send(
-      JSON.stringify({
-        action: 'ping',
-        ping: new Date().getTime().toString()
-      })
-    );
+    if (this._wss) {
+      this._wss.send(
+        JSON.stringify({
+          action: 'ping',
+          ping: new Date().getTime().toString()
+        })
+      );
+    }
   }
 
   _sendPong(msg) {
-    this._wss.send(
-      JSON.stringify({
-        action: 'pong',
-        pong: msg
-      })
-    );
+    if (this._wss) {
+      this._wss.send(
+        JSON.stringify({
+          action: 'pong',
+          pong: msg
+        })
+      );
+    }
   }
 
   _sendSubTrades(remote_id) {

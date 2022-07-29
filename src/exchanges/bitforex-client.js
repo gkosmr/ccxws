@@ -21,15 +21,19 @@ class BitforexClient extends BasicClient {
   }
 
   _sendPing() {
-    this._wss.send("ping_p");
+    if (this._wss) {
+      this._wss.send("ping_p");
+    }
   }
 
   _sendPong() {
-    this._wss.send(
-      JSON.stringify({
-        op: 'pong'
-      })
-    );
+    if (this._wss) {
+      this._wss.send(
+        JSON.stringify({
+          op: 'pong'
+        })
+      );
+    }
   }
 
   _sendSubTrades(remote_id) {

@@ -22,13 +22,15 @@ class DigifinexClient extends BasicClient {
   }
 
   _sendPing() {
-    this._wss.send(
-      JSON.stringify({
-        method: "server.ping",
-        params: [],
-        id: ++this.id,
-      })
-    );
+    if (this._wss) {
+      this._wss.send(
+        JSON.stringify({
+          method: "server.ping",
+          params: [],
+          id: ++this.id,
+        })
+      );
+    }
   }
 
   _sendSubTicker(remote_id) {

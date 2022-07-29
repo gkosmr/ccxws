@@ -21,11 +21,13 @@ class ByBitClient extends BasicClient {
   }
 
   _sendPing() {
-    this._wss.send(
-      JSON.stringify({
-        ping: Date.now()
-      })
-    );
+    if (this._wss) {
+      this._wss.send(
+        JSON.stringify({
+          ping: Date.now()
+        })
+      );
+    }
   }
 
   _sendSubTrades(remote_id) {

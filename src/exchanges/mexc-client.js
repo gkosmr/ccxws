@@ -21,7 +21,9 @@ class MexcClient extends BasicClient {
   }
 
   _sendPing() {
-    this._wss.send("ping");
+    if (this._wss) {
+      this._wss.send("ping");
+    }
   }
 
   _sendSubTrades(remote_id) {

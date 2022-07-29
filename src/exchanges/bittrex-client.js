@@ -62,14 +62,16 @@ class BittrexClient extends BasicClient {
   }
 
   _sendHeartbeat() {
-    this._wss.send(
-      JSON.stringify({
-        H: "c3",
-        M: "Subscribe",
-        A: [["heartbeat"]],
-        I: ++this._messageId,
-      })
-    );
+    if (this._wss) {
+      this._wss.send(
+        JSON.stringify({
+          H: "c3",
+          M: "Subscribe",
+          A: [["heartbeat"]],
+          I: ++this._messageId,
+        })
+      );
+    }
   }
 
   _sendSubTicker() {

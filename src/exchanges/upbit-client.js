@@ -18,7 +18,9 @@ class UpbitClient extends BasicClient {
   }
 
   _sendPing() {
-    this._wss.send("PING");
+    if (this._wss) {
+      this._wss.send("PING");
+    }
   }
 
   _sendSubTicker() {

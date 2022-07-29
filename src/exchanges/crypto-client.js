@@ -22,12 +22,14 @@ class CryptoClient extends BasicClient {
   }
 
   _sendPong(id) {
-    this._wss.send(
-      JSON.stringify({
-        id: id,
-        method: "public/respond-heartbeat"
-      })
-    );
+    if (this._wss) {
+      this._wss.send(
+        JSON.stringify({
+          id: id,
+          method: "public/respond-heartbeat"
+        })
+      );
+    }
   }
 
   /**
