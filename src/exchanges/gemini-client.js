@@ -46,11 +46,11 @@ class GeminiClient extends EventEmitter {
   }
 
   subscribeTicker(market) {
-    this._subscribe(market, "tickers");
+    // this._subscribe(market, "tickers");
   }
 
   unsubscribeTicker(market) {
-    this._unsubscribe(market, "tickers");
+    // this._unsubscribe(market, "tickers");
   }
 
   close() {
@@ -61,7 +61,7 @@ class GeminiClient extends EventEmitter {
   // PROTECTED
 
   _subscribe(market, mode) {
-    let remote_id = market.id.toLowerCase();
+    let remote_id = market.id;
     if (mode === "tickers") remote_id += "-tickers";
 
     let subscription = this._subscriptions.get(remote_id);
@@ -107,11 +107,7 @@ class GeminiClient extends EventEmitter {
    * the subscribed markets.
    */
   _connect(remote_id) {
-    let forTickers = remote_id.endsWith("-tickers");
-    let wssPath =
-      this.wssPath || forTickers
-        ? `wss://api.gemini.com/v1/marketdata/${remote_id}?heartbeat=true&top_of_book=true`
-        : `wss://api.gemini.com/v1/marketdata/${remote_id}?heartbeat=true`;
+    let wssPath = `wss://api.gemini.com/v1/marketdata/${remote_id}?trades=true&heartbeat=true`;
 
     let wss = new SmartWss(wssPath);
     wss.on("error", err => this._onError(remote_id, err));

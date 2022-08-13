@@ -40,6 +40,8 @@ const poloniex = require("./exchanges/poloniex-client");
 const upbit = require("./exchanges/upbit-client");
 const zb = require("./exchanges/zb-client");
 const digifinex = require("./exchanges/digifinex-client");
+const whitebit = require("./exchanges/whitebit-client");
+const xt = require("./exchanges/xt-client");
 
 module.exports = {
   // export all legacy exchange names
@@ -88,6 +90,8 @@ module.exports = {
   poloniex,
   upbit,
   zb,
+  whitebit,
+  xt,
 
   // export all exchanges
   Ascendex: ascendex,
