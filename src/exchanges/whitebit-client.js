@@ -118,7 +118,7 @@ class WhitebitClient extends BasicClient {
       quote: market.quote,
       id: market.id,
       tradeId: id,
-      unix: Math.round(time),
+      unix: Math.round(time*1000),
       side: type,
       price,
       amount
