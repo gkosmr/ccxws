@@ -88,7 +88,7 @@ class AaxClient extends BasicClient {
       }
     } else if(message.e == 'tickers') {
       for(let datum of message.tickers) {      
-        let market = this._tradeSubs.get(datum.s);
+        let market = this._tickerSubs.get(datum.s);
         if(market) {
           let ticker = this._constructTicker(datum, market);
           this.emit("ticker", ticker, market);
