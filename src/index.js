@@ -42,6 +42,7 @@ const zb = require("./exchanges/zb-client");
 const digifinex = require("./exchanges/digifinex-client");
 const whitebit = require("./exchanges/whitebit-client");
 const xt = require("./exchanges/xt-client");
+const dcoin = require("./exchanges/dcoin-client");
 
 module.exports = {
   // export all legacy exchange names
@@ -92,6 +93,7 @@ module.exports = {
   zb,
   whitebit,
   xt,
+  dcoin,
 
   // export all exchanges
   Ascendex: ascendex,
