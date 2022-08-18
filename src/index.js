@@ -47,6 +47,7 @@ const bitget = require("./exchanges/bitget-client");
 const coindcx = require("./exchanges/coindcx-client");
 const currency = require("./exchanges/currency-client");
 const bkex = require("./exchanges/bkex-client");
+const phemex = require("./exchanges/phemex-client");
 
 module.exports = {
   // export all legacy exchange names
@@ -102,6 +103,7 @@ module.exports = {
   coindcx,
   currency,
   bkex,
+  phemex,
 
   // export all exchanges
   Ascendex: ascendex,
