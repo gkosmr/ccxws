@@ -106,7 +106,7 @@ module.exports = {
   currency,
   bkex,
   phemex,
-  bitcome,
+  bitcom,
   coinlist,
 
   // export all exchanges
