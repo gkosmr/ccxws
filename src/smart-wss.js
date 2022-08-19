@@ -2,11 +2,12 @@ const { EventEmitter } = require("events");
 const WebSocket = require("ws");
 
 class SmartWss extends EventEmitter {
-  constructor(wssPath) {
+  constructor(wssPath, protocol = undefined) {
     super();
     this._wssPath = wssPath;
     this._retryTimeoutMs = 15000;
     this._connected = false;
+    this._protocol = protocol;
   }
 
   /**
@@ -62,11 +63,16 @@ class SmartWss extends EventEmitter {
   _attemptConnect() {
     return new Promise(resolve => {
       let wssPath = this._wssPath;
-      this.emit("connecting");
-      this._wss = new WebSocket(wssPath, {
+      let options = {
         perMessageDeflate: false,
         handshakeTimeout: 15000,
-      });
+      };
+      this.emit("connecting");
+      if(this._protocol) {
+        this._wss = new WebSocket(wssPath, this._protocol, options);
+      } else {
+        this._wss = new WebSocket(wssPath, options);
+      }
       this._wss.on("open", () => {
         this._connected = true;
         this.emit("open"); // deprecated

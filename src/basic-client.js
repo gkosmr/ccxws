@@ -11,7 +11,7 @@ const Watcher = require("./watcher");
  * it run the _onConnected method and will resubscribe.
  */
 class BasicTradeClient extends EventEmitter {
-  constructor(wssPath, name, wssFactory, watcherMs) {
+  constructor(wssPath, name, wssFactory, watcherMs, protocol = undefined) {
     super();
     this._wssPath = wssPath;
     this._name = name;
@@ -31,7 +31,7 @@ class BasicTradeClient extends EventEmitter {
     this.hasLevel2Updates = false;
     this.hasLevel3Snapshots = false;
     this.hasLevel3Updates = false;
-    this._wssFactory = wssFactory || (path => new SmartWss(path));
+    this._wssFactory = wssFactory || (path => new SmartWss(path, protocol));
   }
 
   //////////////////////////////////////////////
