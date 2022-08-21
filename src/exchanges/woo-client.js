@@ -88,7 +88,7 @@ class WooClient extends BasicClient {
   _constructTrades(datum, market, ts) {
     let { symbol, price, size, side, source } = datum;
     return new Trade({
-      exchange: "AAX",
+      exchange: "WOO",
       base: market.base,
       quote: market.quote,
       id: market.id,
