@@ -52,6 +52,7 @@ const bitcom = require("./exchanges/bitcom-client");
 const coinlist = require("./exchanges/coinlist-client");
 const bithumbpro = require("./exchanges/bithumbpro-client");
 const btcturk = require("./exchanges/btcturk-client");
+const woo = require("./exchanges/woo-client");
 
 module.exports = {
   // export all legacy exchange names
@@ -112,6 +113,7 @@ module.exports = {
   coinlist,
   bithumbpro,
   btcturk,
+  woo,
 
   // export all exchanges
   Ascendex: ascendex,
