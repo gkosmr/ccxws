@@ -81,7 +81,7 @@ class LaTokenClient extends EventEmitter {
     // this._unsubscribe(market, "trades");
   }
 
-  subscribeTicker(market) {
+  subscribeTicker(market, i) {
     var self = this;
     i = i || 1;
     try {
