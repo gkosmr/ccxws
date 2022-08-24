@@ -1,6 +1,6 @@
 {
   "name": "ccxws",
-  "version": "0.43.41",
+  "version": "0.43.42",
   "description": "Websocket client for 37 cryptocurrency exchanges",
   "keywords": [
     "bitmex",
@@ -22,12 +22,14 @@
   },
   "repository": "altangent/ccxws",
   "dependencies": {
+    "@stomp/stompjs": "^6.1.2",
     "crc": "^3.8.0",
     "decimal.js": "^10.2.0",
     "moment": "^2.26.0",
     "moment-timezone": "^0.5.34",
     "pusher-js": "^4.4.0",
     "semaphore": "^1.1.0",
+    "websocket": "^1.0.34",
     "ws": "^7.3.0"
   },
   "devDependencies": {
