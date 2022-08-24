@@ -69,10 +69,10 @@ class LaTokenClient extends EventEmitter {
           this._onTrade(message.body);
       });
     } catch(e) {
-      if(++i < 10) {
+      if(++i < 60) {
         setTimeout(function() {
           self.subscribeTrades(market, i)
-        }, 500);
+        }, 1000);
       }
     }
   }
@@ -90,10 +90,10 @@ class LaTokenClient extends EventEmitter {
           this.emit("ping");
       });
     } catch(e) {
-      if(++i < 10) {
+      if(++i < 60) {
         setTimeout(function() {
           self.subscribeTicker(market, i)
-        }, 500);
+        }, 1000);
       }
     }
   }
