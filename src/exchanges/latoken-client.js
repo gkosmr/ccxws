@@ -22,10 +22,15 @@ class LaTokenClient extends EventEmitter {
     this.client = new Stomp.Client();
     this.connected = false;
 
+    this.subscriptions = [];
+
     this.client.configure({
       brokerURL: this.wssPath,
       onConnect: () => {
         this.emit('connected');
+        for(let s of this.subscriptions) {
+          this._subscribe(s);
+        }
       },
       onDisconnect: () => {
         this.emit('disconnected');
@@ -60,21 +65,28 @@ class LaTokenClient extends EventEmitter {
     }
   }
 
-  subscribeTrades(market, i) {
+  _subscribe(subscription, i) {    
     var self = this;
     i = i || 1;
+    let market = subscription.market;
     try {
       this.symbol2id[market.base].toLowerCase();  // this throws exception if symbols are not loaded yet and thus trying again in 500ms!
-      this.client.subscribe(`/v1/trade/${this.symbol2id[market.base]}/${this.symbol2id[market.quote]}`, message => {
-          this._onTrade(message.body);
-      });
+      this.client.subscribe(`${subscription.prefix}/${this.symbol2id[market.base]}/${this.symbol2id[market.quote]}`, subscription.callback);
     } catch(e) {
       if(++i < 60) {
         setTimeout(function() {
-          self.subscribeTrades(market, i)
+          self._subscribe(subscription, i);
         }, 1000);
       }
     }
+  }
+
+  subscribeTrades(market, i) {
+    this.subscriptions.push({
+      market,
+      prefix: '/v1/trade',
+      callback: (message) => { this._onTrade(message.body); }
+    });
   }
 
   unsubscribeTrades(market) {
@@ -82,20 +94,11 @@ class LaTokenClient extends EventEmitter {
   }
 
   subscribeTicker(market, i) {
-    var self = this;
-    i = i || 1;
-    try {
-      this.symbol2id[market.base].toLowerCase();  // this throws exception if symbols are not loaded yet and thus trying again in 500ms!
-      this.client.subscribe(`/v1/ticker/${this.symbol2id[market.base]}/${this.symbol2id[market.quote]}`, message => {
-          this.emit("ping");
-      });
-    } catch(e) {
-      if(++i < 60) {
-        setTimeout(function() {
-          self.subscribeTicker(market, i)
-        }, 1000);
-      }
-    }
+    this.subscriptions.push({
+      market,
+      prefix: '/v1/ticker',
+      callback: (message) => { this.emit("ping"); }
+    });
   }
 
   unsubscribeTicker(market) {
