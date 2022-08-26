@@ -55,6 +55,7 @@ const btcturk = require("./exchanges/btcturk-client");
 const woo = require("./exchanges/woo-client");
 const p2pb2b = require("./exchanges/p2pb2b-client");
 const latoken = require("./exchanges/latoken-client");
+const btse = require("./exchanges/btse-client");
 
 module.exports = {
   // export all legacy exchange names
@@ -118,6 +119,7 @@ module.exports = {
   woo,
   p2pb2b,
   latoken,
+  btse,
 
   // export all exchanges
   Ascendex: ascendex,
