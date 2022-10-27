@@ -58,6 +58,9 @@ const latoken = require("./exchanges/latoken-client");
 const btse = require("./exchanges/btse-client");
 const deepcoin = require("./exchanges/deepcoin-client");
 const coinfield = require("./exchanges/coinfield-client");
+const coinsbit = require("./exchanges/coinsbit-client");
+const bingx = require("./exchanges/bingx-client");
+const btcex = require("./exchanges/btcex-client");
 
 module.exports = {
   // export all legacy exchange names
@@ -124,6 +127,9 @@ module.exports = {
   btse,
   deepcoin,
   coinfield,
+  coinsbit,
+  bingx,
+  btcex,
 
   // export all exchanges
   Ascendex: ascendex,
