@@ -64,13 +64,14 @@ class BigOneClient extends BasicClient {
 
   _constructTrades(datum, market) {
     let { id, price, amount, createdAt, takerSide } = datum;
+    let unix = Date.parse(createdAt);
     return new Trade({
       exchange: "BigOne",
       base: market.base,
       quote: market.quote,
       id: market.id,
-      tradeId: id,
-      unix: Date.parse(createdAt),
+      tradeId: `${id}-${unix}`,
+      unix,
       side: takerSide == 'BID' ? 'buy' : 'sell',
       price,
       amount
