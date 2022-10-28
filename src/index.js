@@ -61,6 +61,8 @@ const coinfield = require("./exchanges/coinfield-client");
 const coinsbit = require("./exchanges/coinsbit-client");
 const bingx = require("./exchanges/bingx-client");
 const btcex = require("./exchanges/btcex-client");
+const bigone = require("./exchanges/bigone-client");
+const hotcoin = require("./exchanges/hotcoin-client");
 
 module.exports = {
   // export all legacy exchange names
@@ -130,6 +132,8 @@ module.exports = {
   coinsbit,
   bingx,
   btcex,
+  bigone,
+  hotcoin,
 
   // export all exchanges
   Ascendex: ascendex,
