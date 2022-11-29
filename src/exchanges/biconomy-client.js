@@ -3,13 +3,13 @@ const Trade = require("../trade");
 const Ticker = require("../ticker");
 const zlib = require("zlib");
 
-class BitconomyClient extends BasicClient {
+class BiconomyClient extends BasicClient {
   /**
     Documentation:
     https://github.com/BiconomyOfficial/apidocs#WebSocket-Market-Streams
    */
   constructor({ wssPath = "wss://www.biconomy.com/ws", watcherMs } = {}) {
-    super(wssPath, "Bitconomy", undefined, watcherMs);
+    super(wssPath, "Biconomy", undefined, watcherMs);
     this.hasTickers = false;
     this.hasTrades = true;
     this.hasCandles = false;
@@ -90,7 +90,7 @@ class BitconomyClient extends BasicClient {
   _constructTrades(datum, market) {
     let { id, type, time, price, amount } = datum;
     return new Trade({
-      exchange: "Bitconomy",
+      exchange: "Biconomy",
       base: market.base,
       quote: market.quote,
       id: market.id,
@@ -104,5 +104,5 @@ class BitconomyClient extends BasicClient {
 
 }
 
-module.exports = BitconomyClient;
+module.exports = BiconomyClient;
 
