@@ -37,19 +37,16 @@ class JubiClient extends BasicClient {
   }
 
   _sendSubTrades(remote_id) {
-    this._debounce("deals.subscribe", () => {
-      let symbols = Array.from(this._tradeSubs.keys());
-      this._wss.send(
-        JSON.stringify({
-          symbol: symbols.join(", "),
-          topic: "trade",
-          event: "sub",
-          params: {
-            binary: false // Whether data returned is in binary format
-          }
-        })
-      );
-    });
+    this._wss.send(
+      JSON.stringify({
+        symbol: remote_id,
+        topic: "trade",
+        event: "sub",
+        params: {
+          binary: false // Whether data returned is in binary format
+        }
+      })
+    );
   }
 
   _sendUnsubTrades(remote_id) {
