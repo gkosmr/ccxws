@@ -138,15 +138,19 @@ class KucoinClient extends BasicClient {
   }
 
   _sendSubTicker(remote_id) {
-    this._wss.send(
-      JSON.stringify({
-        id: new Date().getTime(),
-        type: "subscribe",
-        topic: "/market/snapshot:" + remote_id,
-        privateChannel: false,
-        response: true,
-      })
-    );
+    if(this._wss) {
+
+      this._wss.send(
+        JSON.stringify({
+          id: new Date().getTime(),
+          type: "subscribe",
+          topic: "/market/snapshot:" + remote_id,
+          privateChannel: false,
+          response: true,
+        })
+      );
+
+    }
   }
 
   _sendUnsubTicker(remote_id) {
