@@ -64,6 +64,7 @@ const btcex = require("./exchanges/btcex-client");
 const bigone = require("./exchanges/bigone-client");
 const hotcoin = require("./exchanges/hotcoin-client");
 const localtrade = require("./exchanges/localtrade-client");
+const bitconomy = require("./exchanges/bitconomy-client");
 
 module.exports = {
   // export all legacy exchange names
@@ -136,6 +137,7 @@ module.exports = {
   bigone,
   hotcoin,
   localtrade,
+  bitconomy,
 
   // export all exchanges
   Ascendex: ascendex,
