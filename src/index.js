@@ -66,6 +66,7 @@ const hotcoin = require("./exchanges/hotcoin-client");
 const localtrade = require("./exchanges/localtrade-client");
 const biconomy = require("./exchanges/biconomy-client");
 const jubi = require("./exchanges/jubi-client");
+const changelly = require("./exchanges/changelly-client");
 
 module.exports = {
   // export all legacy exchange names
@@ -140,6 +141,7 @@ module.exports = {
   localtrade,
   biconomy,
   jubi,
+  changelly,
 
   // export all exchanges
   Ascendex: ascendex,
