@@ -2,7 +2,7 @@ const BasicClient = require("../basic-client");
 const Trade = require("../trade");
 const Ticker = require("../ticker");
 const zlib = require("zlib");
-const moment = require('moment-timezone');
+// const moment = require('moment-timezone');
 
 class P2PB2BClient extends BasicClient {
   /**
@@ -45,7 +45,7 @@ class P2PB2BClient extends BasicClient {
       this._wss.send(
         JSON.stringify({
           id: this.id++,
-          method: "deals.subscribe_oth",
+          method: "deals.subscribe",
           params: args
         })
       );
