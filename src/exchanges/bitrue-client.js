@@ -91,7 +91,7 @@ class BitrueClient extends BasicClient {
 
     let tmp = message.channel.split("_");
 
-    if(tmp.length == 4 && tmp[2] == 'trade') {
+    if(tmp.length == 4 && tmp[2] == 'trade' && message.tick.data) {
       let remote_id = tmp[1];
       let market = this._tradeSubs.get(remote_id);
       if(market) {
