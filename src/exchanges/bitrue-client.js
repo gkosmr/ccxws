@@ -122,7 +122,7 @@ class BitrueClient extends BasicClient {
       unix: ts,
       side: side.toLowerCase(),
       price,
-      amount
+      amount: vol
     });
   }
 

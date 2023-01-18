@@ -2,7 +2,6 @@ const BasicClient = require("../basic-client");
 const Trade = require("../trade");
 const Ticker = require("../ticker");
 const zlib = require("zlib");
-const moment = require('moment-timezone');
 
 class WooClient extends BasicClient {
   /**
@@ -77,7 +76,7 @@ class WooClient extends BasicClient {
       this._sendPong();
     } else if(message.topic && message.topic.endsWith('@trade') && message.data) {
       let market = this._tradeSubs.get(message.topic.substring(0, message.topic.indexOf('@')));
-      if(market) {
+      if(market && message.data.source == 0) {
         let trade = this._constructTrades(message.data, market, message.ts);
         this.emit("trade", trade, market);
       }
