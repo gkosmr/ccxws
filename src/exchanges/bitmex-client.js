@@ -27,27 +27,27 @@ class BitmexClient extends BasicClient {
      * Keyed from remote_id, market.id
      * */
     this.tickerMap = new Map();
+
+    setInterval(this._sendPing.bind(this), 15*1000);
+  }
+
+  _sendPing() {
+    if (this._wss) {
+      this._wss.send("ping");
+    }
   }
 
   _sendSubTicker(remote_id) {
-    this._sendSubQuote(remote_id);
-    this._sendSubTrades(remote_id);
   }
 
   _sendUnsubTicker(remote_id) {
-    this._sendUnsubQuote(remote_id);
-    // if we're still subscribed to trades for this symbol, don't unsub
-    if (!this._tradeSubs.has(remote_id)) {
-      this._sendUnsubTrades(remote_id);
-    }
-    this._deleteTicker(remote_id);
   }
 
   _sendSubQuote(remote_id) {
     this._wss.send(
       JSON.stringify({
         op: "subscribe",
-        args: [`quote:${remote_id}`],
+        args: `quote:${remote_id}`,
       })
     );
   }
@@ -116,6 +116,10 @@ class BitmexClient extends BasicClient {
   }
 
   _onMessage(msgs) {
+    if(msgs == 'pong') {
+      this.emit("ping");
+      return;
+    }
     let message = JSON.parse(msgs);
     let { table, action } = message;
 

@@ -68,6 +68,7 @@ const biconomy = require("./exchanges/biconomy-client");
 const jubi = require("./exchanges/jubi-client");
 const changelly = require("./exchanges/changelly-client");
 const nominex = require("./exchanges/nominex-client");
+const tidex = require("./exchanges/tidex-client");
 
 module.exports = {
   // export all legacy exchange names
@@ -144,6 +145,7 @@ module.exports = {
   jubi,
   changelly,
   nominex,
+  tidex,
 
   // export all exchanges
   Ascendex: ascendex,
