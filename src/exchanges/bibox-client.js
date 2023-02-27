@@ -15,20 +15,30 @@ class BiboxClient extends BasicClient {
     this.hasTrades = true;
     this.hasLevel2Updates = false;
 
-    setInterval(function () {
-      if(this._wss) {        
-          this._wss.ping(Date.now())
-      }
-    },30000)
+    // setInterval(function () {
+    //   if(this._wss) {        
+    //       this._wss.ping(Date.now())
+    //   }
+    // },30000)
 
-    // setInterval(this._sendPing.bind(this), 15*1000);
+    setInterval(this._sendPing.bind(this), 15*1000);
+  }
+
+  _sendPong(unix) {
+    if (this._wss) {
+      this._wss.send(
+        JSON.stringify({
+          pong: unix
+        })
+      );
+    }
   }
 
   _sendPing() {
     if (this._wss) {
       this._wss.send(
         JSON.stringify({
-          event: 'ping'
+          ping: Date.now()
         })
       );
     }
@@ -78,7 +88,12 @@ class BiboxClient extends BasicClient {
     let msg = JSON.parse(str);
     // console.log(msg);
 
-    if(msg.event == 'pong') {
+    if(msg.ping) {
+      console.log(msg);
+      this._sendPong(msg.ping);
+      this.emit("ping");
+    } else if(msg.pong) {
+      console.log(msg);
       this.emit("ping");
     } else if(msg.topic && msg.topic.endsWith('_deals') && msg.t == 1 && msg.d) {
       let market = this._tradeSubs.get( msg.d[0] );
