@@ -89,11 +89,9 @@ class BiboxClient extends BasicClient {
     // console.log(msg);
 
     if(msg.ping) {
-      console.log(msg);
       this._sendPong(msg.ping);
       this.emit("ping");
     } else if(msg.pong) {
-      console.log(msg);
       this.emit("ping");
     } else if(msg.topic && msg.topic.endsWith('_deals') && msg.t == 1 && msg.d) {
       let market = this._tradeSubs.get( msg.d[0] );
