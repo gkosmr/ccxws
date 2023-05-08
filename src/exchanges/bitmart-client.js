@@ -67,6 +67,7 @@ class BitmartClient extends BasicClient {
       this.emit('ping');
       return;
     }
+    msgs = zlib.inflateRawSync(Buffer.from(msgs)).toString();
     let message = JSON.parse(msgs);
 
     if(message.table == 'spot/trade') {
