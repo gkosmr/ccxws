@@ -6,9 +6,9 @@ const zlib = require("zlib");
 class JubiClient extends BasicClient {
   /**
     Documentation:
-    https://apidocs.jubi.fun/en/websocket-stream.html
+    https://apidocs.jbex.com/en/websocket-stream.html
    */
-  constructor({ wssPath = " wss://ws.jbex.com/ws/quote/v1?lang=en-us", watcherMs } = {}) {
+  constructor({ wssPath = "wss://wsapi.jbex.com/openapi/quote/ws/v1", watcherMs } = {}) {
     super(wssPath, "Jubi", undefined, watcherMs);
     this.hasTickers = false;
     this.hasTrades = true;
