@@ -41,23 +41,23 @@ class DigifinexClient extends BasicClient {
   }
 
   _sendSubTicker(remote_id) {
-    this._wss.send(
-      JSON.stringify({
-        method: "ticker.subscribe",
-        params: [remote_id],
-        id: ++this.id,
-      })
-    );
+    // this._wss.send(
+    //   JSON.stringify({
+    //     method: "ticker.subscribe",
+    //     params: [remote_id],
+    //     id: ++this.id,
+    //   })
+    // );
   }
 
   _sendUnsubTicker(remote_id) {
-    this._wss.send(
-      JSON.stringify({
-        method: "ticker.unsubscribe",
-        params: [remote_id],
-        id: ++this.id,
-      })
-    );
+    // this._wss.send(
+    //   JSON.stringify({
+    //     method: "ticker.unsubscribe",
+    //     params: [remote_id],
+    //     id: ++this.id,
+    //   })
+    // );
   }
 
   _sendSubTrades(remote_id) {
@@ -84,23 +84,23 @@ class DigifinexClient extends BasicClient {
   }
 
   _sendSubLevel2Updates(remote_id) {
-    this._wss.send(
-      JSON.stringify({
-        method: "depth.subscribe",
-        params: [remote_id],
-        id: ++this.id,
-      })
-    );
+    // this._wss.send(
+    //   JSON.stringify({
+    //     method: "depth.subscribe",
+    //     params: [remote_id],
+    //     id: ++this.id,
+    //   })
+    // );
   }
 
   _sendUnsubLevel2Updates(remote_id) {
-    this._wss.send(
-      JSON.stringify({
-        method: "depth.unsubscribe",
-        params: [remote_id],
-        id: ++this.id,
-      })
-    );
+    // this._wss.send(
+    //   JSON.stringify({
+    //     method: "depth.unsubscribe",
+    //     params: [remote_id],
+    //     id: ++this.id,
+    //   })
+    // );
   }
 
   _onMessage(raw) {
