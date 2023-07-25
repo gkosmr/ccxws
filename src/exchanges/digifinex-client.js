@@ -18,6 +18,8 @@ class DigifinexClient extends BasicClient {
     this.hasLevel2Updates = true;
     this.id = 0;
     this._onMessageInf = this._onMessageInf.bind(this);
+    this.debounceWait = 100;
+    this._debounceHandles = new Map();
     setInterval(this._sendPing.bind(this), 20*1000);
   }
 
@@ -31,6 +33,11 @@ class DigifinexClient extends BasicClient {
         })
       );
     }
+  }
+
+  _debounce(type, fn) {
+    clearTimeout(this._debounceHandles.get(type));
+    this._debounceHandles.set(type, setTimeout(fn, this.debounceWait));
   }
 
   _sendSubTicker(remote_id) {
@@ -54,13 +61,16 @@ class DigifinexClient extends BasicClient {
   }
 
   _sendSubTrades(remote_id) {
-    this._wss.send(
-      JSON.stringify({
-        method: "trades.subscribe",
-        params: [remote_id],
-        id: ++this.id,
-      })
-    );
+    this._debounce("spot/trade", () => {
+      let args = Array.from(this._tradeSubs.keys());
+      this._wss.send(
+        JSON.stringify({
+          method: "trades.subscribe",
+          params: args,
+          id: ++this.id,
+        })
+      );
+    });
   }
 
   _sendUnsubTrades(remote_id) {
