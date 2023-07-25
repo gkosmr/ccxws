@@ -35,12 +35,18 @@ class BitmartClient extends BasicClient {
   _sendSubTrades(remote_id) {
     this._debounce("spot/trade", () => {
       let args = Array.from(this._tradeSubs.keys()).map(m => `spot/trade:${m}`);
-      this._wss.send(
-        JSON.stringify({
-          op: "subscribe",
-          args: args
-        })
-      );
+      let x = 20;
+      let i = 0;
+      while(true) {
+        let sliced = args.slice(i*x, (++i)*x);
+        if(sliced.length == 0) break;
+        this._wss.send(
+          JSON.stringify({
+            op: "subscribe",
+            args: sliced
+          })
+        );
+      }
     });
   }
 
@@ -67,7 +73,9 @@ class BitmartClient extends BasicClient {
       this.emit('ping');
       return;
     }
-    msgs = zlib.inflateRawSync(Buffer.from(msgs)).toString();
+    try {
+      msgs = zlib.inflateRawSync(Buffer.from(msgs)).toString();
+    } catch(e) { }
     let message = JSON.parse(msgs);
 
     if(message.table == 'spot/trade') {
@@ -79,6 +87,8 @@ class BitmartClient extends BasicClient {
         }
       }
       return;
+    } else if(message.errorMessage) {
+      this.emit("error", message.errorMessage);
     }
   }
 
