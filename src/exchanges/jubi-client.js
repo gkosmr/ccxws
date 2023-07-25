@@ -83,7 +83,7 @@ class JubiClient extends BasicClient {
       base: market.base,
       quote: market.quote,
       id: market.id,
-      tradeId: v,
+      tradeId: `${v}|${t}`,
       unix: t,
       side: m ? 'buy' : 'sell',
       price: p,
