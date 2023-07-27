@@ -74,6 +74,7 @@ const cointiger = require("./exchanges/cointiger-client");
 const pionex = require("./exchanges/pionex-client");
 const coinstore = require("./exchanges/coinstore-client");
 const citex = require("./exchanges/citex-client");
+const coinw = require("./exchanges/coinw-client");
 
 module.exports = {
   // export all legacy exchange names
@@ -156,6 +157,7 @@ module.exports = {
   pionex,
   coinstore,
   citex,
+  coinw,
 
   // export all exchanges
   Ascendex: ascendex,
