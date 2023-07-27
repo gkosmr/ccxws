@@ -69,6 +69,11 @@ const jubi = require("./exchanges/jubi-client");
 const changelly = require("./exchanges/changelly-client");
 const nominex = require("./exchanges/nominex-client");
 const tidex = require("./exchanges/tidex-client");
+const toobit = require("./exchanges/toobit-client");
+const cointiger = require("./exchanges/cointiger-client");
+const pionex = require("./exchanges/pionex-client");
+const coinstore = require("./exchanges/coinstore-client");
+const citex = require("./exchanges/citex-client");
 
 module.exports = {
   // export all legacy exchange names
@@ -146,6 +151,11 @@ module.exports = {
   changelly,
   nominex,
   tidex,
+  toobit,
+  cointiger,
+  pionex,
+  coinstore,
+  citex,
 
   // export all exchanges
   Ascendex: ascendex,
