@@ -70,13 +70,13 @@ class CitexClient extends BasicClient {
   }
 
   _constructTrades(datum, market) {
-    let { id, side, price, vol, amount, ts, ds } = datum;
+    let { side, price, vol, amount, ts, ds } = datum;
     return new Trade({
       exchange: "Citex",
       base: market.base,
       quote: market.quote,
       id: market.id,
-      tradeId: id,
+      tradeId: ts,
       unix: ts,
       side: side.toLowerCase(),
       price,
