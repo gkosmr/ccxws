@@ -75,9 +75,13 @@ const pionex = require("./exchanges/pionex-client");
 const coinstore = require("./exchanges/coinstore-client");
 const citex = require("./exchanges/citex-client");
 const coinw = require("./exchanges/coinw-client");
+const trubit = require("./exchanges/trubit-client");
+const probit = require("./exchanges/probit-client");
 
 module.exports = {
   // export all legacy exchange names
+  trubit,
+  probit,
   aax,
   aex,
   ascendex,

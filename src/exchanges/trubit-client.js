@@ -4,13 +4,13 @@ const Ticker = require("../ticker");
 const zlib = require("zlib");
 //const moment = require('moment-timezone');
 
-class XtClient extends BasicClient {
+class TrubitClient extends BasicClient {
   /**
     Documentation:
-    https://github.com/xtpub/api-doc/blob/master/websocket-api-v1-en.md
+    https://github.com/Galactic-Tech/OpenApi/blob/main/doc/spot/websocket-stream.md
    */
-  constructor({ wssPath = "wss://stream.xt.com/public", watcherMs } = {}) {
-    super(wssPath, "Xt", undefined, watcherMs);
+  constructor({ wssPath = "wss://ws.trubit.com/openapi/quote/ws/v1", watcherMs } = {}) {
+    super(wssPath, "Trubit", undefined, watcherMs);
     this.hasTickers = true;
     this.hasTrades = true;
     this.hasCandles = false;
@@ -19,12 +19,14 @@ class XtClient extends BasicClient {
     this.id = 1;
     this.debounceWait = 500;
     this._debounceHandles = new Map();
-    setInterval(this._sendPing.bind(this), 30*1000);
+    setInterval(this._sendPing.bind(this), 60*1000);
   }
 
   _sendPing() {
     if (this._wss) {    
-      this._wss.send("ping");
+      this._wss.send(JSON.stringify({
+        ping: Date.now()
+      }));
     }
   }
 
@@ -35,12 +37,12 @@ class XtClient extends BasicClient {
 
   _sendSubTrades(remote_id) {
     this._debounce("trade.subscribe", () => {
-      let params = Array.from(this._tradeSubs.keys()).map(x => `trade@${x}`);
+      let params = Array.from(this._tradeSubs.keys()).join(",");
       this._wss.send(
         JSON.stringify({
-            method: "subscribe", 
-            params, 
-            id: this.id++
+            event: "sub",
+            topic: 'trade',
+            symbol: params
         })
       );
     });
@@ -49,9 +51,9 @@ class XtClient extends BasicClient {
   _sendUnsubTrades(remote_id) {
     this._wss.send(
       JSON.stringify({
-          method: "unsubscribe", 
-          params: [`trade@${remote_id}`], 
-          id: this.id++
+          event: "cancel",
+          topic: 'trade',
+          symbol: remote_id
       })
     );
   }
@@ -65,32 +67,33 @@ class XtClient extends BasicClient {
   }
 
   _onMessage(msg) {
-    if(msg == 'pong') {
-      this.emit('ping');
-      return;
-    }
     let message = JSON.parse(msg);
 
-    if(message.topic == 'trade' && message.data) {
-      let market = this._tradeSubs.get(message.data.s);
+    if(message.pong) {
+      this.emit('ping');
+      return;
+    } else if(message.topic == 'trade' && message.data) {
+      let market = this._tradeSubs.get(message.symbol);
       if(market) {
-        let trade = this._constructTrades(message.data, market);
-        this.emit("trade", trade, market);
+        for(let datum of message.data) {
+          let trade = this._constructTrades(datum, market);
+          this.emit("trade", trade, market);
+        }
       }
     }
   }
 
 
   _constructTrades(datum, market) {
-    let { i, t, p, q, b } = datum;
+    let { v, t, p, q, m } = datum;
     return new Trade({
-      exchange: "Xt",
+      exchange: "Trubit",
       base: market.base,
       quote: market.quote,
       id: market.id,
-      tradeId: i,
+      tradeId: v,
       unix: t,
-      side: b ? 'buy' : 'sell',
+      side: m ? 'buy' : 'sell',
       price: p,
       amount: q
     });
@@ -98,4 +101,4 @@ class XtClient extends BasicClient {
 
 }
 
-module.exports = XtClient;
+module.exports = TrubitClient;
