@@ -7,9 +7,9 @@ const moment = require('moment-timezone');
 class PhemexClient extends BasicClient {
   /**
     Documentation:
-    https://github.com/phemex/phemex-api-docs/blob/master/Public-Spot-API-en.md#wsapi
+    https://phemex-docs.github.io/#overview
    */
-  constructor({ wssPath = "wss://phemex.com/ws", watcherMs } = {}) {
+  constructor({ wssPath = "wss://ws.phemex.com", watcherMs } = {}) {
     super(wssPath, "Phemex", undefined, watcherMs);
     this.hasTickers = true;
     this.hasTrades = true;
@@ -19,7 +19,7 @@ class PhemexClient extends BasicClient {
     this.id = 0;
     this.debounceWait = 500;
     this._debounceHandles = new Map();
-    setInterval(this._sendPing.bind(this), 5*1000);
+    setInterval(this._sendPing.bind(this), 30*1000);
   }
 
   _sendPing() {
