@@ -24,15 +24,9 @@ class XtClient extends BasicClient {
 
   _sendPing() {
     if (this._wss) {    
-      this._wss.send(
-        this._wss.send("ping")
-      );
-  
-        // JSON.stringify({
-        //     ping: Date.now 
-        // })
-    // )};
-  }}
+      this._wss.send("ping");
+    }
+  }
 
   _debounce(type, fn) {
     clearTimeout(this._debounceHandles.get(type));
