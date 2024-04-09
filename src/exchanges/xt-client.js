@@ -19,14 +19,20 @@ class XtClient extends BasicClient {
     this.id = 1;
     this.debounceWait = 500;
     this._debounceHandles = new Map();
-    setInterval(this._sendPing.bind(this), 30*1000);
+    setInterval(this._sendPing.bind(this), 5*1000);
   }
 
   _sendPing() {
     if (this._wss) {    
-      this._wss.send("ping");
-    }
-  }
+      this._wss.send(
+        this._wss.send("ping")
+      );
+  
+        // JSON.stringify({
+        //     ping: Date.now 
+        // })
+    // )};
+  }}
 
   _debounce(type, fn) {
     clearTimeout(this._debounceHandles.get(type));
