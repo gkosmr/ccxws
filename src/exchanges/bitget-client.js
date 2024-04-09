@@ -7,9 +7,9 @@ const moment = require('moment-timezone');
 class BitGetClient extends BasicClient {
   /**
     Documentation:
-    https://bitgetlimited.github.io/apidoc/en/spot/#websocketapi
+    https://www.bitget.com/api-doc/common/websocket-intro
    */
-  constructor({ wssPath = "wss://ws.bitget.com/spot/v1/stream", watcherMs } = {}) {
+  constructor({ wssPath = "wss://ws.bitget.com/v2/ws/public", watcherMs } = {}) {
     super(wssPath, "BitGet", undefined, watcherMs);
     this.hasTickers = true;
     this.hasTrades = true;
@@ -19,7 +19,7 @@ class BitGetClient extends BasicClient {
     this.id = 0;
     this.debounceWait = 500;
     this._debounceHandles = new Map();
-    setInterval(this._sendPing.bind(this), 25*1000);
+    setInterval(this._sendPing.bind(this), 30*1000);
   }
 
   _sendPing() {
@@ -35,7 +35,7 @@ class BitGetClient extends BasicClient {
 
   _sendSubTrades(remote_id) {
     this._debounce("trades_subscribe", () => {
-      let args = Array.from(this._tradeSubs.keys()).map( rid => { return { instType: 'SP', channel: 'trade', instId: rid }; } );
+      let args = Array.from(this._tradeSubs.keys()).map( rid => { return { instType: 'SPOT', channel: 'trade', instId: rid }; } );
       this._wss.send(
         JSON.stringify({
           op: 'subscribe',
@@ -82,7 +82,7 @@ class BitGetClient extends BasicClient {
     }
     let message = JSON.parse(msg);
 
-    if(message.arg && message.arg.channel == 'trade') {
+    if(message.arg && message.arg.channel == 'trade' && message.event != "subscribe") {
       let market = this._tradeSubs.get(message.arg.instId);
       if(market) {
         for(let datum of message.data) {
@@ -90,7 +90,7 @@ class BitGetClient extends BasicClient {
           this.emit("trade", trade, market);
         }
       }
-    } else if(message.arg && message.arg.channel == 'ticker') {
+    } else if(message.arg && message.arg.channel == 'ticker' && message.event != "subscribe") {
       let market = this._tickerSubs.get(message.arg.instId);
       if(market) {
         for(let datum of message.data) {
@@ -102,17 +102,17 @@ class BitGetClient extends BasicClient {
   }
 
   _constructTrades(datum, market) {
-    let [ unix, price, amount, side ] = datum;
+    let { ts, tradeId, price, size, side } = datum;
     return new Trade({
       exchange: "BitGet",
       base: market.base,
       quote: market.quote,
       id: market.id,
-      tradeId: unix,
-      unix,
+      tradeId: tradeId,
+      unix: ts,
       side,
       price,
-      amount
+      amount: size
     });
   }
 
