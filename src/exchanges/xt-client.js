@@ -19,7 +19,7 @@ class XtClient extends BasicClient {
     this.id = 1;
     this.debounceWait = 500;
     this._debounceHandles = new Map();
-    setInterval(this._sendPing.bind(this), 30*1000);
+    setInterval(this._sendPing.bind(this), 5*1000);
   }
 
   _sendPing() {
