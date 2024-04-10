@@ -69,7 +69,7 @@ class ByBitClient extends BasicClient {
 
   _onMessage(msg) {
     let message = JSON.parse(msg);
-
+    
     if(message.pong) {
     	this.emit('ping');
     } else if(message.topic && message.topic.startsWith(tradePrefix)) {
@@ -92,7 +92,7 @@ class ByBitClient extends BasicClient {
       id: market.id,
       tradeId: i,
       unix: T,
-      side: S,
+      side: S.toLowerCase(),
       price: p,
       amount: v
     });
