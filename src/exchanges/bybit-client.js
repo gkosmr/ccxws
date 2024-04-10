@@ -3,13 +3,14 @@ const Trade = require("../trade");
 const Ticker = require("../ticker");
 const zlib = require("zlib");
 const moment = require('moment-timezone');
+const tradePrefix = "publicTrade.";
 
 class ByBitClient extends BasicClient {
   /**
     Documentation:
-    https://bybit-exchange.github.io/docs/spot/#t-websocketv2trade
+    https://bybit-exchange.github.io/docs/v5/ws/connect#how-to-subscribe-to-topics
    */
-  constructor({ wssPath = "wss://stream.bybit.com/spot/quote/ws/v2", watcherMs } = {}) {
+  constructor({ wssPath = "wss://stream.bybit.com/v5/public/spot", watcherMs } = {}) {
     super(wssPath, "ByBit", undefined, watcherMs);
     this.hasTickers = false;
     this.hasTrades = true;
@@ -17,6 +18,8 @@ class ByBitClient extends BasicClient {
     this.hasLevel2Updates = false;
     this.constructL2Price = false;
     this.id = 0;
+    this.debounceWait = 500;
+    this._debounceHandles = new Map();
     setInterval(this._sendPing.bind(this), 30*1000);
   }
 
@@ -24,34 +27,36 @@ class ByBitClient extends BasicClient {
     if (this._wss) {
       this._wss.send(
         JSON.stringify({
-          ping: Date.now()
+          op: "ping"
         })
       );
     }
   }
 
+  _debounce(type, fn) {
+    clearTimeout(this._debounceHandles.get(type));
+    this._debounceHandles.set(type, setTimeout(fn, this.debounceWait));
+  }
+
   _sendSubTrades(remote_id) {
+    this._debounce("deals.subscribe", () => {
+    let params = Array.from(this._tradeSubs.keys());
     this._wss.send(
       JSON.stringify({
-	    topic: "trade",
-	    params: {
-	        symbol: remote_id,
-	        binary: false
-	    },
-	    event: "sub"
-      })
-    );
+        op: "subscribe",
+        args: params.map(p => tradePrefix+p)
+        })
+      );
+    });
   }
 
   _sendUnsubTrades(remote_id) {
     this._wss.send(
       JSON.stringify({
-	    topic: "trade",
-	    params: {
-	        symbol: remote_id,
-	        binary: false
-	    },
-	    event: "cancel"
+        op: "unsubscribe",
+        args: [
+          tradePrefix+remote_id
+        ]
       })
     );
   }
@@ -64,30 +69,32 @@ class ByBitClient extends BasicClient {
 
   _onMessage(msg) {
     let message = JSON.parse(msg);
-
+    
     if(message.pong) {
     	this.emit('ping');
-    } else if(message.topic == 'trade') {
-    	let market = this._tradeSubs.get(message.params.symbol);
-		if(market && message.data) {
-			let trade = this._constructTrades(message.data, market);
-			this.emit("trade", trade, market);
-		}
+    } else if(message.topic && message.topic.startsWith(tradePrefix)) {
+    	let market = this._tradeSubs.get(message.topic.split(".")[1]);
+      if(market && message.data) {
+        for(let datum of message.data){
+          let trade = this._constructTrades(datum, market);
+          this.emit("trade", trade, market);
+        }
+      }
     }
   }
 
   _constructTrades(datum, market) {
-    let { v, t, p, q, m } = datum;
+    let { v, T, p, i, S } = datum;
     return new Trade({
       exchange: "ByBit",
       base: market.base,
       quote: market.quote,
       id: market.id,
-      tradeId: v,
-      unix: t,
-      side: m ? 'buy' : 'sell',
+      tradeId: i,
+      unix: T,
+      side: S.toLowerCase(),
       price: p,
-      amount: q
+      amount: v
     });
   }
 
